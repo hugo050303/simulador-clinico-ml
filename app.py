@@ -5,6 +5,7 @@
 # ==============================================================================
 
 import streamlit as st
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -36,10 +37,42 @@ st.set_page_config(page_title="Soporte Clínico Minimalista", page_icon="⚕️"
 
 # Carga de la hoja de estilos CSS personalizada
 try:
-    with open("style.css") as f:
+    with open("style.css", encoding="utf-8") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 except FileNotFoundError:
     pass
+
+# ------------------------------------------------------------------------------
+# TEMA CLARO / OSCURO -- usando config.toml nativo de Streamlit
+# ------------------------------------------------------------------------------
+CONFIG_PATH = os.path.join(os.path.dirname(__file__), ".streamlit", "config.toml")
+
+TEMA_CLARO = """[theme]
+base            = \"light\"
+primaryColor    = \"#0369a1\"
+backgroundColor = \"#f0f4f8\"
+secondaryBackgroundColor = \"#ffffff\"
+textColor       = \"#0f172a\"
+font            = \"sans serif\"
+"""
+
+TEMA_OSCURO = """[theme]
+base            = \"dark\"
+primaryColor    = \"#38bdf8\"
+backgroundColor = \"#0f172a\"
+secondaryBackgroundColor = \"#1e293b\"
+textColor       = \"#e2e8f0\"
+font            = \"sans serif\"
+"""
+
+def aplicar_tema(oscuro: bool):
+    os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
+    with open(CONFIG_PATH, "w", encoding="utf-8") as f:
+        f.write(TEMA_OSCURO if oscuro else TEMA_CLARO)
+
+if "modo_oscuro" not in st.session_state:
+    st.session_state.modo_oscuro = False
+
 
 # ------------------------------------------------------------------------------
 # FILTRADO Y OPTIMIZACIÓN DEL DATASET A LOS 4 DATOS CRÍTICOS
@@ -125,8 +158,17 @@ def entrenar_pipeline_ia():
 # ------------------------------------------------------------------------------
 # NAVEGACIÓN MEDIANTE MENÚ DESPLEGABLE LATERAL (SIDEBAR UX)
 # ------------------------------------------------------------------------------
-st.sidebar.title("⚕️ Panel Clínico")
-st.sidebar.markdown("Navegación del Sistema Integrador:")
+st.sidebar.title("⚕️ Panel Clinico")
+st.sidebar.markdown("Navegacion del Sistema Integrador:")
+
+# -- TOGGLE TEMA -------------------------------------------------------
+tema_anterior = st.session_state.modo_oscuro
+st.session_state.modo_oscuro = st.sidebar.toggle(
+    "🌙  Modo Oscuro", value=st.session_state.modo_oscuro
+)
+if st.session_state.modo_oscuro != tema_anterior:
+    aplicar_tema(st.session_state.modo_oscuro)
+    st.rerun()
 
 opcion_menu = st.sidebar.selectbox(
     "Seleccione una Vista",
@@ -151,33 +193,154 @@ st.sidebar.caption("Tecnológico Nacional de México")
 
 # Vista 1: SIMULADOR CLÍNICO PRINCIPAL
 if opcion_menu == "🩺 Simulador de Diagnóstico":
-    st.title("Sistema de Soporte de Decisions Clínicas")
-    st.markdown("Inferencia diagnóstica de patologías mamarias optimizada mediante **Máquinas de Soporte Vectorial (SVM)**.")
-    
+    st.title("Sistema de Soporte de Decisiones Clínicas")
+    st.markdown("Clasificación de patologías mamarias mediante **Máquinas de Soporte Vectorial (SVM)** entrenadas con el dataset Wisconsin Breast Cancer (569 pacientes reales).")
+
+    # ── GUÍA RÁPIDA PARA EL USUARIO ──────────────────────────────────────────
+    with st.expander("❓ ¿Cómo usar este simulador? — Guía rápida", expanded=False):
+        st.markdown("""
+        **¿Qué son estos parámetros?**
+        Son mediciones microscópicas del núcleo celular obtenidas de una biopsia.
+        El modelo SVM analiza los 4 valores juntos y clasifica la muestra.
+
+        | Parámetro | Valor BAJO → más probable benigno | Valor ALTO → más probable maligno |
+        |---|---|---|
+        | 🔵 **Área Media** | Célula pequeña (~460 u²) | Célula grande (~978 u²) |
+        | 🟣 **Textura** | Superficie uniforme (~17) | Superficie irregular (~21) |
+        | 🟠 **Suavidad** | Borde regular (~0.08) | Borde rugoso (~0.12) |
+        | 🔴 **Concavidad** | Contorno liso (~0.05) | Contorno con hendiduras (~0.16) |
+
+        > ⚠️ Este sistema es una **herramienta educativa de apoyo**, no reemplaza el criterio médico profesional.
+        """)
+
     st.markdown('<div class="predictor-card">', unsafe_allow_html=True)
-    st.subheader("Entrada del Vector de Características Obligatorias")
-    
+    st.subheader("📐 Ajuste los parámetros de la muestra celular")
+
+    # ── REFERENCIAS RÁPIDAS DE CONTEXTO ──────────────────────────────────────
+    area_media_benigno  = float(df[df['diagnostico'] == 1]['area_media'].mean())
+    area_media_maligno  = float(df[df['diagnostico'] == 0]['area_media'].mean())
+    conc_media_benigno  = float(df[df['diagnostico'] == 1]['concavidad_media'].mean())
+    conc_media_maligno  = float(df[df['diagnostico'] == 0]['concavidad_media'].mean())
+
     col_a, col_b = st.columns(2)
     with col_a:
-        in_area = st.slider("Área Media Celular (Volumen Espacial)", float(df['area_media'].min()), float(df['area_media'].max()), float(df['area_media'].mean()))
-        in_texture = st.slider("Textura Media (Homogeneidad de Cromatina)", float(df['textura_media'].min()), float(df['textura_media'].max()), float(df['textura_media'].mean()))
-    with col_b:
-        in_smoothness = st.slider("Suavidad Media Local (Regularidad del Borde)", float(df['suavidad_media'].min()), float(df['suavidad_media'].max()), float(df['suavidad_media'].mean()))
-        in_concavity = st.slider("Concavidad Media (Hendiduras del Contorno)", float(df['concavidad_media'].min()), float(df['concavidad_media'].max()), float(df['concavidad_media'].mean()))
+        # ── ÁREA MEDIA ────────────────────────────────────────────────────────
+        st.markdown(f"""
+        <div class="param-hint">
+            🔵 <b>Área Media Celular</b> &nbsp;|&nbsp;
+            <span class="hint-benign">Benigno típico: {area_media_benigno:.0f} u²</span> &nbsp;·&nbsp;
+            <span class="hint-malign">Maligno típico: {area_media_maligno:.0f} u²</span>
+        </div>
+        """, unsafe_allow_html=True)
+        in_area = st.slider(
+            "Área (u²) — tamaño del núcleo celular",
+            float(df['area_media'].min()), float(df['area_media'].max()),
+            float(df['area_media'].mean()),
+            help="Células malignas tienen núcleos más grandes. Mueve hacia la derecha para simular mayor tamaño."
+        )
 
-    if st.button("Ejecutar Análisis Clínico del Patrón"):
-        # Creamos un DataFrame con los nombres correctos para que el escalador no falle
-        vector_df = pd.DataFrame([[in_area, in_texture, in_smoothness, in_concavity]], columns=columnas_4)
+        # ── TEXTURA ───────────────────────────────────────────────────────────
+        tex_ben = float(df[df['diagnostico'] == 1]['textura_media'].mean())
+        tex_mal = float(df[df['diagnostico'] == 0]['textura_media'].mean())
+        st.markdown(f"""
+        <div class="param-hint">
+            🟣 <b>Textura Media</b> &nbsp;|&nbsp;
+            <span class="hint-benign">Benigno típico: {tex_ben:.1f}</span> &nbsp;·&nbsp;
+            <span class="hint-malign">Maligno típico: {tex_mal:.1f}</span>
+        </div>
+        """, unsafe_allow_html=True)
+        in_texture = st.slider(
+            "Textura — irregularidad de la superficie celular",
+            float(df['textura_media'].min()), float(df['textura_media'].max()),
+            float(df['textura_media'].mean()),
+            help="Mide qué tan uniforme es la cromatina. Valores altos = superficie irregular = señal de alerta."
+        )
+
+    with col_b:
+        # ── SUAVIDAD ──────────────────────────────────────────────────────────
+        sua_ben = float(df[df['diagnostico'] == 1]['suavidad_media'].mean())
+        sua_mal = float(df[df['diagnostico'] == 0]['suavidad_media'].mean())
+        st.markdown(f"""
+        <div class="param-hint">
+            🟠 <b>Suavidad del Borde</b> &nbsp;|&nbsp;
+            <span class="hint-benign">Benigno típico: {sua_ben:.3f}</span> &nbsp;·&nbsp;
+            <span class="hint-malign">Maligno típico: {sua_mal:.3f}</span>
+        </div>
+        """, unsafe_allow_html=True)
+        in_smoothness = st.slider(
+            "Suavidad — regularidad del contorno celular",
+            float(df['suavidad_media'].min()), float(df['suavidad_media'].max()),
+            float(df['suavidad_media'].mean()),
+            help="Qué tan regular es el borde del núcleo. Bordes irregulares son indicador de malignidad."
+        )
+
+        # ── CONCAVIDAD ────────────────────────────────────────────────────────
+        st.markdown(f"""
+        <div class="param-hint">
+            🔴 <b>Concavidad Media</b> &nbsp;|&nbsp;
+            <span class="hint-benign">Benigno típico: {conc_media_benigno:.3f}</span> &nbsp;·&nbsp;
+            <span class="hint-malign">Maligno típico: {conc_media_maligno:.3f}</span>
+        </div>
+        """, unsafe_allow_html=True)
+        in_concavity = st.slider(
+            "Concavidad — hendiduras en el contorno del núcleo",
+            float(df['concavidad_media'].min()), float(df['concavidad_media'].max()),
+            float(df['concavidad_media'].mean()),
+            help="Las células malignas tienden a tener contornos irregulares con muchas hendiduras."
+        )
+
+    # ── BOTÓN Y RESULTADO ─────────────────────────────────────────────────────
+    if st.button("🔬 Ejecutar Análisis Clínico del Patrón"):
+        # Vector al escalador — nombres correctos para evitar KeyError
+        vector_df = pd.DataFrame(
+            [[in_area, in_texture, in_smoothness, in_concavity]],
+            columns=columnas_4
+        )
         vector_escalado = escalador.transform(vector_df)
-        prediccion = modelo_svm.predict(vector_escalado)[0]
-        probabilidades = modelo_svm.predict_proba(vector_escalado)[0]
-        
+        prediccion      = modelo_svm.predict(vector_escalado)[0]
+        probabilidades  = modelo_svm.predict_proba(vector_escalado)[0]
+
         st.write("---")
+
         if prediccion == 0:
-            st.markdown(f'<div class="result-malignant">⚠️ <b>DIAGNOSTICO:</b> Estructura celular clasificada como MALIGNA (Certeza: {probabilidades[0]*100:.2f}%)</div>', unsafe_allow_html=True)
+            certeza = probabilidades[0] * 100
+            st.markdown(f"""
+            <div class="result-malignant">
+                ⚠️ <b>DIAGNÓSTICO: MALIGNA</b> — Certeza del modelo: {certeza:.2f}%<br>
+                <span style="font-weight:400; font-size:0.88rem; opacity:0.85;">
+                El SVM detectó un patrón celular consistente con tejido maligno.
+                Se recomienda revisión clínica especializada con estos valores.
+                </span>
+            </div>
+            """, unsafe_allow_html=True)
         else:
-            st.markdown(f'<div class="result-benign">✅ <b>DIAGNOSTICO:</b> Estructura celular clasificada como BENIGNA (Certeza: {probabilidades[1]*100:.2f}%)</div>', unsafe_allow_html=True)
-            
+            certeza = probabilidades[1] * 100
+            st.markdown(f"""
+            <div class="result-benign">
+                ✅ <b>DIAGNÓSTICO: BENIGNA</b> — Certeza del modelo: {certeza:.2f}%<br>
+                <span style="font-weight:400; font-size:0.88rem; opacity:0.85;">
+                El SVM clasificó el patrón celular como tejido benigno.
+                Los valores ingresados no presentan indicadores de malignidad significativos.
+                </span>
+            </div>
+            """, unsafe_allow_html=True)
+
+        # ── Desglose de contribución visual (solo informativo, usa los valores reales) ──
+        st.markdown("#### 📊 Tus valores vs. promedios del dataset")
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Área Media", f"{in_area:.0f} u²",
+                  delta=f"{in_area - df['area_media'].mean():.0f} vs promedio",
+                  delta_color="inverse")
+        c2.metric("Textura", f"{in_texture:.2f}",
+                  delta=f"{in_texture - df['textura_media'].mean():.2f} vs promedio",
+                  delta_color="inverse")
+        c3.metric("Suavidad", f"{in_smoothness:.4f}",
+                  delta=f"{in_smoothness - df['suavidad_media'].mean():.4f} vs promedio",
+                  delta_color="inverse")
+        c4.metric("Concavidad", f"{in_concavity:.4f}",
+                  delta=f"{in_concavity - df['concavidad_media'].mean():.4f} vs promedio",
+                  delta_color="inverse")
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 # Vista 2: PRUEBAS ESTADÍSTICAS OBLIGATORIAS (TEMA 1)

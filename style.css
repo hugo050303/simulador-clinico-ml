@@ -1,65 +1,704 @@
-/* style.css */
-/* Ajuste de márgenes superiores para mayor limpieza */
+/* ============================================================
+   SISTEMA DE SOPORTE CLINICO -- DISENO PREMIUM RESPONSIVO
+   Tecnologico Nacional de Mexico . Aprendizaje Automatico
+   ============================================================ */
+
+/* -- FUENTES ----------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&display=swap');
+
+/* -- TOKENS DE DISENO (Design System Variables) ----------- */
+:root {
+  /* Paleta principal -- Azul clinico profundo */
+  --color-bg:          #f0f4f8;
+  --color-surface:     #ffffff;
+  --color-surface-alt: #f8fafc;
+  --color-border:      #e2e8f0;
+  --color-border-soft: #f1f5f9;
+
+  /* Primario -- Azul acero */
+  --color-primary:     #0369a1;
+  --color-primary-lt:  #e0f2fe;
+  --color-primary-dk:  #0c4a6e;
+
+  /* Diagnostico */
+  --color-danger:      #dc2626;
+  --color-danger-lt:   #fef2f2;
+  --color-danger-brd:  #ef4444;
+  --color-success:     #16a34a;
+  --color-success-lt:  #f0fdf4;
+  --color-success-brd: #22c55e;
+  --color-warn:        #d97706;
+  --color-warn-lt:     #fffbeb;
+
+  /* Tipografia */
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+
+  /* Sombras */
+  --shadow-xs:  0 1px 2px rgba(15,23,42,.06);
+  --shadow-sm:  0 2px 8px rgba(15,23,42,.08), 0 1px 2px rgba(15,23,42,.04);
+  --shadow-md:  0 4px 16px rgba(15,23,42,.10), 0 2px 4px rgba(15,23,42,.06);
+  --shadow-lg:  0 8px 32px rgba(15,23,42,.12), 0 4px 8px rgba(15,23,42,.06);
+  --shadow-glow: 0 0 0 3px rgba(3,105,161,.18);
+
+  /* Radios */
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
+  --radius-xl:  24px;
+  --radius-pill: 9999px;
+
+  /* Transiciones */
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:   cubic-bezier(0.4, 0, 1, 1);
+  --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:  150ms;
+  --dur-base:  250ms;
+  --dur-slow:  400ms;
+}
+
+/* -- RESET & BASE ------------------------------------------ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* -- LAYOUT GLOBAL STREAMLIT ------------------------------- */
+.stApp {
+  background-color: var(--color-bg) !important;
+  font-family: var(--font-body) !important;
+}
+
+/* Contenedor principal: padding responsivo */
 .block-container {
-    padding-top: 2rem !important;
+  padding-top: 1.5rem !important;
+  padding-left: clamp(0.75rem, 4vw, 3rem) !important;
+  padding-right: clamp(0.75rem, 4vw, 3rem) !important;
+  max-width: 1280px !important;
 }
 
+/* -- TIPOGRAFIA -------------------------------------------- */
 h1 {
-    color: #0f172a !important;
-    font-weight: 800 !important;
-    font-size: 2.2rem !important;
-    letter-spacing: -0.5px !important;
+  font-family: var(--font-display) !important;
+  color: var(--color-primary-dk) !important;
+  font-size: clamp(1.6rem, 4vw, 2.5rem) !important;
+  font-weight: 400 !important;             /* DM Serif Display es naturalmente bold */
+  letter-spacing: -0.3px !important;
+  line-height: 1.2 !important;
+  margin-bottom: 0.35rem !important;
+  animation: fadeSlideDown var(--dur-slow) var(--ease-out) both;
 }
 
-h2, h3 {
-    color: #334155 !important;
-    font-weight: 600 !important;
+h2 {
+  font-family: var(--font-body) !important;
+  color: var(--color-primary) !important;
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.1px !important;
+  border-left: 3px solid var(--color-primary) !important;
+  padding-left: 0.65rem !important;
+  margin-top: 1.5rem !important;
 }
 
-/* Tarjeta principal del simulador con sombra muy sutil */
+h3 {
+  font-family: var(--font-body) !important;
+  color: #334155 !important;
+  font-size: clamp(0.95rem, 2vw, 1.1rem) !important;
+  font-weight: 600 !important;
+}
+
+p, .stMarkdown p {
+  font-size: clamp(0.85rem, 1.8vw, 0.95rem) !important;
+  line-height: 1.65 !important;
+  color: #475569 !important;
+}
+
+/* Subtitulo bajo el h1 */
+.stMarkdown p:first-child {
+  color: #64748b !important;
+  font-size: clamp(0.875rem, 1.8vw, 1rem) !important;
+}
+
+/* -- SIDEBAR ----------------------------------------------- */
+section[data-testid="stSidebar"] {
+  background: linear-gradient(160deg, var(--color-primary-dk) 0%, #1e3a5f 100%) !important;
+  border-right: 1px solid rgba(255,255,255,.06) !important;
+  box-shadow: 4px 0 24px rgba(15,23,42,.12) !important;
+}
+
+section[data-testid="stSidebar"] * {
+  color: #e2e8f0 !important;
+  font-family: var(--font-body) !important;
+}
+
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] .stSidebarHeader {
+  color: #ffffff !important;
+  font-family: var(--font-display) !important;
+  font-size: 1.4rem !important;
+  letter-spacing: 0.5px !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px solid rgba(255,255,255,.12) !important;
+  margin-bottom: 1rem !important;
+  animation: none !important;
+}
+
+/* Separador del sidebar */
+section[data-testid="stSidebar"] hr {
+  border-color: rgba(255,255,255,.12) !important;
+  margin: 1rem 0 !important;
+}
+
+/* Caption del sidebar */
+section[data-testid="stSidebar"] .stCaption {
+  color: #94a3b8 !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.3px !important;
+}
+
+/* Selectbox sidebar */
+section[data-testid="stSidebar"] .stSelectbox label {
+  color: #cbd5e1 !important;
+  font-size: 0.78rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+}
+
+section[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div {
+  background: rgba(255,255,255,.08) !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  border-radius: var(--radius-md) !important;
+  color: #f1f5f9 !important;
+  transition: background var(--dur-base) var(--ease-out), border-color var(--dur-base) !important;
+}
+
+section[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div:hover {
+  background: rgba(255,255,255,.14) !important;
+  border-color: rgba(255,255,255,.28) !important;
+}
+
+/* -- TARJETA PRINCIPAL DEL SIMULADOR ---------------------- */
 .predictor-card {
-    background-color: #ffffff;
-    border: 1px solid #f1f5f9;
-    border-radius: 12px;
-    padding: 35px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-    margin-top: 10px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  box-shadow: var(--shadow-lg);
+  margin-top: 1rem;
+  position: relative;
+  overflow: hidden;
+  animation: fadeSlideUp var(--dur-slow) var(--ease-out) 0.1s both;
+  transition: box-shadow var(--dur-base) var(--ease-out);
 }
 
-/* Botón principal optimizado */
-.stButton>button {
-    background-color: #0284c7 !important;
-    color: white !important;
-    border-radius: 8px !important;
-    padding: 12px 24px !important;
-    font-weight: 600 !important;
-    border: none !important;
-    box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.2) !important;
-    transition: all 0.2s ease !important;
-    width: 100% !important;
-    margin-top: 15px !important;
+/* Acento decorativo en esquina superior izquierda */
+.predictor-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--color-primary) 0%, #38bdf8 100%);
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
 }
 
-.stButton>button:hover {
-    background-color: #0369a1 !important;
-    box-shadow: 0 6px 8px -1px rgba(2, 132, 199, 0.3) !important;
+.predictor-card:hover {
+  box-shadow: var(--shadow-lg), 0 0 0 2px var(--color-primary-lt);
 }
 
-/* Cajas de diagnóstico limpias */
+/* -- SLIDERS ----------------------------------------------- */
+.stSlider {
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+
+.stSlider label {
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+  letter-spacing: 0.2px !important;
+  text-transform: uppercase !important;
+}
+
+/* Contenedor del track con margen para que el thumb no se corte */
+.stSlider [data-baseweb="slider"] {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  overflow: visible !important;
+}
+
+.stSlider [data-baseweb="slider"] div[role="slider"] {
+  background: var(--color-primary) !important;
+  border: 2px solid white !important;
+  box-shadow: 0 0 0 2px var(--color-primary), var(--shadow-sm) !important;
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) !important;
+  overflow: visible !important;
+  z-index: 2 !important;
+}
+
+.stSlider [data-baseweb="slider"] div[role="slider"]:hover,
+.stSlider [data-baseweb="slider"] div[role="slider"]:focus {
+  transform: scale(1.18) !important;
+  box-shadow: 0 0 0 4px var(--color-primary-lt), var(--shadow-md) !important;
+}
+
+/* Track activo del slider */
+.stSlider [data-baseweb="slider"] [data-testid="stSliderTrackFill"] {
+  background: linear-gradient(90deg, var(--color-primary) 0%, #38bdf8 100%) !important;
+}
+
+/* Valores min/max del slider */
+.stSlider [data-testid="stTickBarMin"],
+.stSlider [data-testid="stTickBarMax"] {
+  color: #94a3b8 !important;
+  font-size: 0.72rem !important;
+}
+
+/* -- BOTON PRINCIPAL ---------------------------------------- */
+.stButton > button {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #0ea5e9 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: var(--radius-pill) !important;
+  padding: 0.75rem 2rem !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
+  box-shadow: 0 4px 14px rgba(3,105,161,.35) !important;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) !important;
+  width: 100% !important;
+  margin-top: 1.25rem !important;
+  cursor: pointer !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.stButton > button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.0);
+  transition: background var(--dur-fast);
+}
+
+.stButton > button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(3,105,161,.45) !important;
+}
+
+.stButton > button:hover::after { background: rgba(255,255,255,.08); }
+
+.stButton > button:active {
+  transform: translateY(0) scale(0.98) !important;
+  box-shadow: 0 2px 8px rgba(3,105,161,.3) !important;
+}
+
+/* -- RESULTADOS DE DIAGNOSTICO ----------------------------- */
 .result-malignant {
-    background-color: #fef2f2;
-    border-left: 4px solid #ef4444;
-    color: #991b1b;
-    padding: 18px;
-    border-radius: 8px;
-    font-weight: 600;
+  background: var(--color-danger-lt);
+  border: 1px solid #fecaca;
+  border-left: 5px solid var(--color-danger-brd);
+  color: #7f1d1d;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  font-weight: 600;
+  line-height: 1.5;
+  box-shadow: 0 4px 12px rgba(239,68,68,.12);
+  animation: resultPop var(--dur-slow) var(--ease-out) both;
 }
 
 .result-benign {
-    background-color: #f0fdf4;
-    border-left: 4px solid #22c55e;
-    color: #166534;
-    padding: 18px;
-    border-radius: 8px;
-    font-weight: 600;
+  background: var(--color-success-lt);
+  border: 1px solid #bbf7d0;
+  border-left: 5px solid var(--color-success-brd);
+  color: #14532d;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  font-weight: 600;
+  line-height: 1.5;
+  box-shadow: 0 4px 12px rgba(34,197,94,.12);
+  animation: resultPop var(--dur-slow) var(--ease-out) both;
 }
+
+/* -- DATAFRAME / TABLAS ------------------------------------ */
+.stDataFrame, [data-testid="stDataFrame"] {
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  overflow: hidden !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.stDataFrame thead th {
+  background: var(--color-primary-dk) !important;
+  color: white !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  padding: 0.6rem 1rem !important;
+}
+
+.stDataFrame tbody tr:hover td {
+  background: var(--color-primary-lt) !important;
+  transition: background var(--dur-fast) !important;
+}
+
+/* -- METRICAS ----------------------------------------------- */
+[data-testid="stMetric"] {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 1.25rem 1.5rem !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: box-shadow var(--dur-base) var(--ease-out), transform var(--dur-base) !important;
+  animation: fadeSlideUp var(--dur-slow) var(--ease-out) both;
+}
+
+[data-testid="stMetric"]:hover {
+  box-shadow: var(--shadow-md) !important;
+  transform: translateY(-2px) !important;
+}
+
+[data-testid="stMetricLabel"] {
+  font-family: var(--font-body) !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.6px !important;
+  text-transform: uppercase !important;
+  color: #64748b !important;
+}
+
+[data-testid="stMetricValue"] {
+  font-family: var(--font-display) !important;
+  font-size: clamp(1.5rem, 3.5vw, 2rem) !important;
+  color: var(--color-primary) !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.5px !important;
+}
+
+/* -- ALERTAS / INFO / SUCCESS / WARNING -------------------- */
+.stAlert {
+  border-radius: var(--radius-md) !important;
+  border: none !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.875rem !important;
+  box-shadow: var(--shadow-xs) !important;
+}
+
+[data-testid="stNotification"][data-type="info"] {
+  background: var(--color-primary-lt) !important;
+  border-left: 4px solid var(--color-primary) !important;
+}
+
+[data-testid="stNotification"][data-type="success"] {
+  background: var(--color-success-lt) !important;
+  border-left: 4px solid var(--color-success-brd) !important;
+}
+
+[data-testid="stNotification"][data-type="warning"] {
+  background: var(--color-warn-lt) !important;
+  border-left: 4px solid var(--color-warn) !important;
+}
+
+/* -- NUMBER INPUT ------------------------------------------ */
+.stNumberInput label {
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+}
+
+.stNumberInput input {
+  border: 1.5px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-body) !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  color: var(--color-primary-dk) !important;
+  padding: 0.5rem 0.75rem !important;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast) !important;
+}
+
+.stNumberInput input:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: var(--shadow-glow) !important;
+  outline: none !important;
+}
+
+/* -- DIVIDER ----------------------------------------------- */
+hr {
+  border: none !important;
+  border-top: 1px solid var(--color-border) !important;
+  margin: 1.25rem 0 !important;
+}
+
+/* -- GRAFICAS MATPLOTLIB/SEABORN --------------------------- */
+[data-testid="stImage"] img,
+.stPyplot > div {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-md) !important;
+  overflow: hidden !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+/* -- COLUMNAS -- Espaciado entre cards --------------------- */
+[data-testid="column"] {
+  padding: 0.35rem !important;
+}
+
+/* -- SELECTBOX GLOBAL -------------------------------------- */
+.stSelectbox label {
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+}
+
+.stSelectbox [data-baseweb="select"] > div {
+  border: 1.5px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.95rem !important;
+  color: var(--color-primary-dk) !important;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast) !important;
+}
+
+.stSelectbox [data-baseweb="select"] > div:hover {
+  border-color: var(--color-primary) !important;
+}
+
+/* -- SCROLLBAR PERSONALIZADA ------------------------------- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+
+/* -- ANIMACIONES ------------------------------------------- */
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes resultPop {
+  0%   { opacity: 0; transform: scale(0.95) translateY(8px); }
+  60%  { transform: scale(1.01) translateY(-1px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* -- BADGE de estado (decorativo) -------------------------- */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--color-primary-lt);
+  color: var(--color-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(3,105,161,.2);
+}
+
+/* -- RESPONSIVIDAD ----------------------------------------- */
+
+/* Tablet (<= 768px) */
+@media (max-width: 768px) {
+  .block-container {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    padding-top: 1rem !important;
+  }
+
+  h1 { font-size: 1.55rem !important; }
+  h2 { font-size: 1.05rem !important; }
+
+  .predictor-card {
+    padding: 1.25rem !important;
+    border-radius: var(--radius-lg) !important;
+  }
+
+  /* Sliders mas grandes en tactil */
+  .stSlider [data-baseweb="slider"] div[role="slider"] {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .stButton > button {
+    font-size: 0.95rem !important;
+    padding: 0.85rem 1.5rem !important;
+  }
+
+  [data-testid="stMetric"] {
+    padding: 1rem !important;
+  }
+}
+
+/* Movil (<= 480px) */
+@media (max-width: 480px) {
+  h1 { font-size: 1.35rem !important; letter-spacing: -0.2px !important; }
+
+  .block-container {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  .predictor-card {
+    padding: 1rem !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .result-malignant,
+  .result-benign {
+    font-size: 0.85rem !important;
+    padding: 1rem !important;
+  }
+
+  [data-testid="stMetricValue"] {
+    font-size: 1.5rem !important;
+  }
+
+  /* Apilamos columnas en movil automaticamente */
+  [data-testid="column"] {
+    padding: 0.2rem !important;
+  }
+}
+
+/* -- HEADER SUPERIOR (barra Streamlit default) ------------- */
+header[data-testid="stHeader"] {
+  background: rgba(240,244,248,.85) !important;
+  backdrop-filter: blur(8px) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+/* -- SELECTBOX SIDEBAR: indicador animado ------------------ */
+section[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div:focus-within {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 2px rgba(56,189,248,.25) !important;
+}
+
+/* -- GUIAS DE PARAMETROS (param-hint) --------------------- */
+.param-hint {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #64748b;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.7rem;
+  margin-bottom: 0.35rem;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.hint-benign {
+  color: var(--color-success);
+  font-weight: 600;
+  background: var(--color-success-lt);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid #bbf7d0;
+  white-space: nowrap;
+}
+
+.hint-malign {
+  color: var(--color-danger);
+  font-weight: 600;
+  background: var(--color-danger-lt);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid #fecaca;
+  white-space: nowrap;
+}
+
+/* Expander (guia rapida) */
+.stExpander {
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--color-surface) !important;
+  box-shadow: var(--shadow-xs) !important;
+  margin-bottom: 1rem !important;
+}
+
+.stExpander summary {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  color: var(--color-primary) !important;
+  padding: 0.75rem 1rem !important;
+}
+
+/* Tabla dentro del expander */
+.stExpander table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  margin-top: 0.5rem;
+}
+
+.stExpander th {
+  background: var(--color-primary-dk) !important;
+  color: white !important;
+  padding: 0.5rem 0.75rem !important;
+  text-align: left !important;
+  font-weight: 600 !important;
+  font-size: 0.78rem !important;
+}
+
+.stExpander td {
+  padding: 0.45rem 0.75rem !important;
+  border-bottom: 1px solid var(--color-border-soft) !important;
+  color: #475569 !important;
+  vertical-align: top !important;
+}
+
+.stExpander tr:hover td {
+  background: var(--color-primary-lt) !important;
+}
+
+/* -- FOOTER decorativo ------------------------------------- */
+footer { visibility: hidden !important; }
+footer::after {
+  content: 'TecNM . Aprendizaje Automatico';
+  visibility: visible;
+  display: block;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-family: var(--font-body);
+  padding: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
